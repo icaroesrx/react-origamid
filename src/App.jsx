@@ -1,45 +1,35 @@
-const produtos = [
-  {
-    id: 1,
-    nome: 'Smartphone',
-    preco: 'R$ 2000',
-    cores: ['#29d8d5', '#252a34', '#fc3766'],
-  },
-  {
-    id: 2,
-    nome: 'Notebook',
-    preco: 'R$ 3000',
-    cores: ['#ffd045', '#d4394b', '#f37c59'],
-  },
-  {
-    id: 3,
-    nome: 'Tablet',
-    preco: 'R$ 1500',
-    cores: ['#365069', '#47c1c8', '#f95786'],
-  },
-];
+import React from 'react';
+import Produto from './Produto';
 
 const App = () => {
+  const [dados, setDados] = React.useState(null);
+  const [carregando, setCarregando] = React.useState(null);
+
+  async function handleClick(event) {
+    setCarregando(true);
+    const response = await fetch(
+      `https://ranekapi.origamid.dev/json/api/produto/${event.target.innerText}`,
+    );
+    const json = await response.json();
+    setDados(json);
+    setCarregando(false);
+  }
+
   return (
-  <section>
-    {produtos
-    .filter((produto) => Number(produto.preco.replace('R$ ', '')) > 1500)
-    .map((produto) => (
-      <div key={produto.id}>
-        <h1>{produto.nome}</h1>
-        <p>Preço: {produto.preco}</p>
-        <ul>
-          {produto.cores.map((cor) => (
-            <li key={cor} style={{ background: cor, color: 'white' }}>
-              {cor}
-            </li>
-          ))}
-        </ul>
-      </div>
-    ))}
-  </section>
+    <div>
+      <button style={{ margin: '.5rem ' }} onClick={handleClick}>
+        notebook
+      </button>
+      <button style={{ margin: '.5rem ' }} onClick={handleClick}>
+        smartphone
+      </button>
+      <button style={{ margin: '.5rem ' }} onClick={handleClick}>
+        tablet
+      </button>
+      {carregando && <p>Carregando...</p>}
+      {!carregando && dados && <Produto dados={dados} />}
+    </div>
   );
 };
-
 
 export default App;
